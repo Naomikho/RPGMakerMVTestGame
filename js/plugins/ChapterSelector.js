@@ -1,5 +1,3 @@
-//import the Chapter Scene classes here
-
 // Chapter Selector scene
 function Scene_ChapterSelector() {
     this.initialize.apply(this, arguments);
