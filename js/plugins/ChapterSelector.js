@@ -42,23 +42,23 @@ Scene_ChapterSelector.prototype.createButtons = function() {
     this._rightButton.setClickHandler(this._handler.incrementChapter.bind(this._handler));
     this.addChild(this._rightButton);
 
-    this._startButton = new Sprite(new Bitmap(150, 50)); // Set button size
+    this._startButton = new Sprite(new Bitmap(250, 50)); // Set button size
 
     // Draw a filled rectangle (button background)
-    this._startButton.bitmap.fillRect(0, 0, 150, 50, "#444"); // Dark gray button
+    this._startButton.bitmap.fillRect(0, 0, 250, 50, "#444"); // Dark gray button
 
     // Draw text on the button
     this._startButton.bitmap.textColor = "#FFF"; // White text
     this._startButton.bitmap.fontSize = 22;
-    this._startButton.bitmap.drawText("Start Chapter " + this._handler.chapterNumber, 0, 10, 150, 30, "center");
-    this._startButton.x = 330;
+    this._startButton.bitmap.drawText("Start " + this._handler.chapterName, -25, 10, 300, 30, "center");
+    this._startButton.x = 265;
     this._startButton.y = 500;
     this.addChild(this._startButton);
 
     // Create an invisible Sprite_Button on top
     this._startButtonClickArea = new Sprite_Button();
-    this._startButtonClickArea.bitmap = new Bitmap(150, 50);
-    this._startButtonClickArea.bitmap.fillRect(0, 0, 150, 50, "rgba(0, 0, 0, 0)");
+    this._startButtonClickArea.bitmap = new Bitmap(250, 50);
+    this._startButtonClickArea.bitmap.fillRect(0, 0, 250, 50, "rgba(0, 0, 0, 0)");
     this._startButtonClickArea.x = this._startButton.x;
     this._startButtonClickArea.y = this._startButton.y;
     this._startButtonClickArea.setClickHandler(this.startChapter.bind(this));
@@ -71,10 +71,10 @@ Scene_ChapterSelector.prototype.startChapter = function() {
 
 Scene_ChapterSelector.prototype.createText = function() {
     this._textSprite = new Sprite(new Bitmap(500, 100));
-    this._textSprite.x = 100;
+    this._textSprite.x = 150;
     this._textSprite.y = 50;
     this._textSprite.bitmap.fontSize = 28;
-    this._textSprite.bitmap.drawText(this._handler.chapterTitle, 0, 0, 500, 40, "center");
+    this._textSprite.bitmap.drawText(this._handler.chapterTitle, 0, 0, 400, 40, "center");
     this.addChild(this._textSprite);
 };
 
@@ -85,14 +85,14 @@ Scene_ChapterSelector.prototype.updateBackground = function() {
 Scene_ChapterSelector.prototype.updateText = function() {
     if (this._textSprite) {
         this._textSprite.bitmap.clear(); // Clear the previous text
-        this._textSprite.bitmap.drawText(this._handler.chapterTitle, 0, 0, 500, 40, "center"); // Draw new text
+        this._textSprite.bitmap.drawText(this._handler.chapterTitle, 0, 0, 400, 40, "center"); // Draw new text
     }
 };
 
 Scene_ChapterSelector.prototype.updateStartButton = function() {
     if (this._startButton) {
         this._startButton.bitmap.clear();
-        this._startButton.bitmap.drawText("Start Chapter " + this._handler.chapterNumber, 0, 10, 150, 30, "center");
+        this._startButton.bitmap.drawText("Start " + this._handler.chapterName, -25, 10, 300, 30, "center");
     }
 }
 
@@ -126,25 +126,29 @@ class ChapterSelector {
     get chapters() {
         return {
             '1': {
-                title: 'Chapter 1: xxxx',
+                title: 'xxxx',
+                name: 'Ch 1. Part 1',
                 chapterImage: 'Meadow',
                 spoilerChapterImage: 'Meadow',
                 chapterScene: 'Scene_ChapterOne',
             },
             '2': {
-                title: 'Chapter 2: xxxx',
+                title: 'xxxx',
+                name: 'Ch 1. Part 2',
                 chapterImage: 'Crystal',
                 spoilerChapterImage: 'Crystal',
                 chapterScene: 'Scene_ChapterTwo',
             },
             '3' : {
-                title: 'Chapter 3: xxxx',
+                title: 'xxxx',
+                name: 'Ch 2. Part 1',
                 chapterImage: 'Snowfield',
                 spoilerChapterImage: 'Snowfield',
                 chapterScene: 'Scene_ChapterThree',
             },
             '4' : {
-                title: 'Chapter 4: xxxx',
+                title: 'xxxx',
+                name: 'Ch 2. Part 2',
                 chapterImage: 'Translucent',
                 spoilerChapterImage: 'Translucent',
                 chapterScene: 'Scene_ChapterFour',
@@ -156,9 +160,13 @@ class ChapterSelector {
         return this.chapterNumber;
     }
 
+    get chapterName() {
+        return this.chapters[this.chapterNumber.toString()].name;
+    }
+
     // instead of using a switch, we can simplify it by writing our json object as a [key: string] : object map
     get chapterTitle() {
-        return this.chapters[this.chapterNumber.toString()].title;
+        return this.chapters[this.chapterNumber.toString()].name + ' ' + this.chapters[this.chapterNumber.toString()].title;
     }
 
     get chapterImage() {
