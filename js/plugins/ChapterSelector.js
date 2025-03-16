@@ -1,3 +1,5 @@
+//import the Chapter Scene classes here
+
 // Chapter Selector scene
 function Scene_ChapterSelector() {
     this.initialize.apply(this, arguments);
@@ -41,7 +43,33 @@ Scene_ChapterSelector.prototype.createButtons = function() {
     this._rightButton.y = 5;
     this._rightButton.setClickHandler(this._handler.incrementChapter.bind(this._handler));
     this.addChild(this._rightButton);
+
+    this._startButton = new Sprite(new Bitmap(150, 50)); // Set button size
+
+    // Draw a filled rectangle (button background)
+    this._startButton.bitmap.fillRect(0, 0, 150, 50, "#444"); // Dark gray button
+
+    // Draw text on the button
+    this._startButton.bitmap.textColor = "#FFF"; // White text
+    this._startButton.bitmap.fontSize = 22;
+    this._startButton.bitmap.drawText("Start Chapter " + this._handler.chapterNumber, 0, 10, 150, 30, "center");
+    this._startButton.x = 330;
+    this._startButton.y = 500;
+    this.addChild(this._startButton);
+
+    // Create an invisible Sprite_Button on top
+    this._startButtonClickArea = new Sprite_Button();
+    this._startButtonClickArea.bitmap = new Bitmap(150, 50);
+    this._startButtonClickArea.bitmap.fillRect(0, 0, 150, 50, "rgba(0, 0, 0, 0)");
+    this._startButtonClickArea.x = this._startButton.x;
+    this._startButtonClickArea.y = this._startButton.y;
+    this._startButtonClickArea.setClickHandler(this.startChapter.bind(this));
+    this.addChild(this._startButtonClickArea);
 };
+
+Scene_ChapterSelector.prototype.startChapter = function() {
+    SceneManager.goto(window[this._handler.chapterScene]);
+}
 
 Scene_ChapterSelector.prototype.createText = function() {
     this._textSprite = new Sprite(new Bitmap(500, 100));
@@ -62,6 +90,13 @@ Scene_ChapterSelector.prototype.updateText = function() {
         this._textSprite.bitmap.drawText(this._handler.chapterTitle, 0, 0, 500, 40, "center"); // Draw new text
     }
 };
+
+Scene_ChapterSelector.prototype.updateStartButton = function() {
+    if (this._startButton) {
+        this._startButton.bitmap.clear();
+        this._startButton.bitmap.drawText("Start Chapter " + this._handler.chapterNumber, 0, 10, 150, 30, "center");
+    }
+}
 
 // Handle chapter change
 Scene_ChapterSelector.prototype.onChapterChanged = function(chapterIndex) {    
@@ -96,21 +131,25 @@ class ChapterSelector {
                 title: 'Chapter 1: xxxx',
                 chapterImage: 'Meadow',
                 spoilerChapterImage: 'Meadow',
+                chapterScene: 'Scene_ChapterOne',
             },
             '2': {
                 title: 'Chapter 2: xxxx',
                 chapterImage: 'Crystal',
                 spoilerChapterImage: 'Crystal',
+                chapterScene: 'Scene_ChapterTwo',
             },
             '3' : {
                 title: 'Chapter 3: xxxx',
                 chapterImage: 'Snowfield',
                 spoilerChapterImage: 'Snowfield',
+                chapterScene: 'Scene_ChapterThree',
             },
             '4' : {
                 title: 'Chapter 4: xxxx',
                 chapterImage: 'Translucent',
                 spoilerChapterImage: 'Translucent',
+                chapterScene: 'Scene_ChapterFour',
             }
         };
     }
@@ -129,6 +168,10 @@ class ChapterSelector {
         return this.playerChapterProgress >= this.chapterNumber 
             ? this.chapters[this.chapterNumber.toString()].spoilerChapterImage
             : this.chapters[this.chapterNumber.toString()].chapterImage;
+    }
+
+    get chapterScene() {
+        return this.chapters[this.chapterNumber.toString()].chapterScene;
     }
 
     incrementChapter() {
