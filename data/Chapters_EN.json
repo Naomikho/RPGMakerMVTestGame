@@ -1,0 +1,16 @@
+{
+    "1": {
+        "title": "Chance and Destiny",
+        "name" : "Ch 1. Part 1",
+        "chapterImage": "chapter1part1",
+        "spoilerChapterImage": "chapter1part1",
+        "chapterScene": "Scene_ChapterOne"
+    },
+    "2": {
+        "title": "It's in the Cards",
+        "name" : "Ch 1. Part 2",
+        "chapterImage": "chapter1part2",
+        "spoilerChapterImage": "chapter1part2",
+        "chapterScene": "Scene_ChapterTwo"
+    }
+}

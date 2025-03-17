@@ -1,3 +1,24 @@
+/*:
+ * @plugindesc Plugin for Chapter Selector scene.
+ * @author Naomikho
+ *
+ * @help This plugin does not provide plugin commands nor params. Params are to be set in json files or via the code itself.
+ *
+ * setup required:
+ * A Chapters_{language_name}.json file. Currently it will read Chapters_EN.json file by default, 
+ * so you will need to create a json file according to the Chapters_EN.json in this repository.
+ * the names should be self explanatory, the chapterScene property is for the name of the scene it should jump to when the start button is clicked.
+ * 
+ * You would also need to add the images LeftArrow.png and RightArrow.png into the img/pictures folder.
+ */
+
+// Load all required json files here
+
+// TODO: when we have translations, so we'd have to dynamically load it from a xxx_{language_name}.json
+// this language would have to read from a config file.
+const language = 'EN';
+DataManager.loadDataFile('chapters', `Chapters_${language}.json`);
+
 // Chapter Selector scene
 function Scene_ChapterSelector() {
     this.initialize.apply(this, arguments);
@@ -14,56 +35,79 @@ Scene_ChapterSelector.prototype.initialize = function() {
 Scene_ChapterSelector.prototype.create = function() {
     Scene_Base.prototype.create.call(this);
     this.createBackground();
-    this.createButtons();
+    this.createArrowButtons();
     this.createText();
+    this.createStartButton();
 
     // Listen for chapter changes
-    this._handler.on("chapterChanged", this.onChapterChanged.bind(this));
+    this._handler.on('chapterChanged', this.onChapterChanged.bind(this));
 };
 
 Scene_ChapterSelector.prototype.createBackground = function() {
     this._backgroundSprite = new Sprite();
     this._backgroundSprite.bitmap = ImageManager.loadPicture(this._handler.chapterImage);
+
+    this._backgroundSprite.bitmap.addLoadListener(() => {
+        const screenWidth = Graphics.width;
+        const screenHeight = Graphics.height;
+        const imgWidth = this._backgroundSprite.bitmap.width;
+        const imgHeight = this._backgroundSprite.bitmap.height;
+
+        // Scale to image to fit screen
+        const scaleX = screenWidth / imgWidth;
+        const scaleY = screenHeight / imgHeight;
+        const scale = Math.min(scaleX, scaleY); // Keep aspect ratio
+
+        this._backgroundSprite.scale.x = scale;
+        this._backgroundSprite.scale.y = scale;
+
+        // Center the image
+        this._backgroundSprite.x = (screenWidth - imgWidth * scale) / 2;
+        this._backgroundSprite.y = (screenHeight - imgHeight * scale) / 2;
+    });
+
     this.addChild(this._backgroundSprite);
 };
 
-Scene_ChapterSelector.prototype.createButtons = function() {
+Scene_ChapterSelector.prototype.createArrowButtons = function() {
     this._leftButton = new Sprite_Button();
-    this._leftButton.bitmap = ImageManager.loadPicture("LeftArrow");
+    this._leftButton.bitmap = ImageManager.loadPicture('LeftArrow');
     this._leftButton.x = 10; 
     this._leftButton.y = 10;
     this._leftButton.setClickHandler(this._handler.decrementChapter.bind(this._handler));
     this.addChild(this._leftButton);
 
     this._rightButton = new Sprite_Button();
-    this._rightButton.bitmap = ImageManager.loadPicture("RightArrow");
+    this._rightButton.bitmap = ImageManager.loadPicture('RightArrow');
     this._rightButton.x = Graphics.width - this._rightButton.bitmap.width - 70;
     this._rightButton.y = 5;
     this._rightButton.setClickHandler(this._handler.incrementChapter.bind(this._handler));
     this.addChild(this._rightButton);
+};
 
-    this._startButton = new Sprite(new Bitmap(250, 50)); // Set button size
+Scene_ChapterSelector.prototype.createStartButton = function() {
+    this._startButton = new Sprite(new Bitmap(268, 50)); // Set button size
 
     // Draw a filled rectangle (button background)
-    this._startButton.bitmap.fillRect(0, 0, 250, 50, "#444"); // Dark gray button
+    this._startButton.bitmap.fillRect(0, 0, 268, 50, '#444');
 
     // Draw text on the button
-    this._startButton.bitmap.textColor = "#FFF"; // White text
-    this._startButton.bitmap.fontSize = 22;
-    this._startButton.bitmap.drawText("Start " + this._handler.chapterName, -25, 10, 300, 30, "center");
-    this._startButton.x = 265;
-    this._startButton.y = 500;
+    this._startButton.bitmap.textColor = '#FFF'; // White text
+    this._startButton.bitmap.fontSize = 28;
+    this._startButton.bitmap.drawText('Start ' + this._handler.chapterName, -15, 10, 300, 30, 'center');
+    this._startButton.x = 260;
+    this._startButton.y = 540;
     this.addChild(this._startButton);
 
     // Create an invisible Sprite_Button on top
     this._startButtonClickArea = new Sprite_Button();
     this._startButtonClickArea.bitmap = new Bitmap(250, 50);
-    this._startButtonClickArea.bitmap.fillRect(0, 0, 250, 50, "rgba(0, 0, 0, 0)");
+    this._startButtonClickArea.bitmap.fillRect(0, 0, 250, 50, 'rgba(0, 0, 0, 0)');
     this._startButtonClickArea.x = this._startButton.x;
     this._startButtonClickArea.y = this._startButton.y;
     this._startButtonClickArea.setClickHandler(this.startChapter.bind(this));
     this.addChild(this._startButtonClickArea);
-};
+}
 
 Scene_ChapterSelector.prototype.startChapter = function() {
     SceneManager.goto(window[this._handler.chapterScene]);
@@ -71,10 +115,17 @@ Scene_ChapterSelector.prototype.startChapter = function() {
 
 Scene_ChapterSelector.prototype.createText = function() {
     this._textSprite = new Sprite(new Bitmap(500, 100));
-    this._textSprite.x = 150;
-    this._textSprite.y = 50;
+    this._textSprite.x = 195;
+    this._textSprite.y = 25;
+    this._textSprite.bitmap.fontSize = 38;
+    this._textSprite.bitmap.drawText('Chapter Select', 0, 0, 400, 40, 'center');
+    this.addChild(this._textSprite);
+
+    this._textSprite = new Sprite(new Bitmap(500, 100));
+    this._textSprite.x = 190;
+    this._textSprite.y = 70;
     this._textSprite.bitmap.fontSize = 28;
-    this._textSprite.bitmap.drawText(this._handler.chapterTitle, 0, 0, 400, 40, "center");
+    this._textSprite.bitmap.drawText(this._handler.chapterTitle, 0, 0, 400, 40, 'center');
     this.addChild(this._textSprite);
 };
 
@@ -85,14 +136,14 @@ Scene_ChapterSelector.prototype.updateBackground = function() {
 Scene_ChapterSelector.prototype.updateText = function() {
     if (this._textSprite) {
         this._textSprite.bitmap.clear(); // Clear the previous text
-        this._textSprite.bitmap.drawText(this._handler.chapterTitle, 0, 0, 400, 40, "center"); // Draw new text
+        this._textSprite.bitmap.drawText(this._handler.chapterTitle, 0, 0, 400, 40, 'center'); // Draw new text
     }
 };
 
-Scene_ChapterSelector.prototype.updateStartButton = function() {
+Scene_ChapterSelector.prototype.updateStartButtonText = function() {
     if (this._startButton) {
         this._startButton.bitmap.clear();
-        this._startButton.bitmap.drawText("Start " + this._handler.chapterName, -25, 10, 300, 30, "center");
+        this._startButton.bitmap.drawText('Start ' + this._handler.chapterName, -25, 10, 300, 30, 'center');
     }
 }
 
@@ -100,6 +151,7 @@ Scene_ChapterSelector.prototype.updateStartButton = function() {
 Scene_ChapterSelector.prototype.onChapterChanged = function(chapterIndex) {    
     this.updateText();
     this.updateBackground();
+    this.createStartButton();
 };
 
 
@@ -107,10 +159,13 @@ Scene_ChapterSelector.prototype.onChapterChanged = function(chapterIndex) {
 class ChapterSelector {
     constructor() {
         this.chapterNumber = 1;
-        this.chapterLimit = Object.keys(this.chapters).length;
-        // read the chapter progress of the player. Ideally we want this to be a const with a fixed value, e.g. const CHAPTER_1_CLEARED = 1;
+        // read the chapter progress of the player.
         this.playerChapterProgress = 1;
         this.eventTarget = new EventTarget();
+        if (window['chapters']) {
+            this.chapters = chapters;
+        }
+        this.chapterLimit = Object.keys(this.chapters).length;
     }
 
     emit(eventName, data) {
@@ -121,40 +176,6 @@ class ChapterSelector {
     on(eventName, callback) {
         this.eventTarget.addEventListener(eventName, (e) => callback(e.detail));
     };
-
-    // read it from json file later, when we have translations, so we'd have to dynamically load it from a xxx_{language_name}.json
-    get chapters() {
-        return {
-            '1': {
-                title: 'xxxx',
-                name: 'Ch 1. Part 1',
-                chapterImage: 'Meadow',
-                spoilerChapterImage: 'Meadow',
-                chapterScene: 'Scene_ChapterOne',
-            },
-            '2': {
-                title: 'xxxx',
-                name: 'Ch 1. Part 2',
-                chapterImage: 'Crystal',
-                spoilerChapterImage: 'Crystal',
-                chapterScene: 'Scene_ChapterTwo',
-            },
-            '3' : {
-                title: 'xxxx',
-                name: 'Ch 2. Part 1',
-                chapterImage: 'Snowfield',
-                spoilerChapterImage: 'Snowfield',
-                chapterScene: 'Scene_ChapterThree',
-            },
-            '4' : {
-                title: 'xxxx',
-                name: 'Ch 2. Part 2',
-                chapterImage: 'Translucent',
-                spoilerChapterImage: 'Translucent',
-                chapterScene: 'Scene_ChapterFour',
-            }
-        };
-    }
 
     get chapter() {
         return this.chapterNumber;
@@ -183,14 +204,14 @@ class ChapterSelector {
     incrementChapter() {
         if (this.chapterNumber < this.chapterLimit) {
             this.chapterNumber++;
-            this.emit("chapterChanged", this.chapterIndex);
+            this.emit('chapterChanged', this.chapterIndex);
         }
     }
 
     decrementChapter() {
         if (this.chapterNumber > 1) {
             this.chapterNumber--;
-            this.emit("chapterChanged", this.chapterIndex);
+            this.emit('chapterChanged', this.chapterIndex);
         }
     }
 }
