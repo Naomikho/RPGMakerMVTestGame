@@ -9,10 +9,15 @@
  * so you will need to create a json file according to the Chapters_EN.json in this repository.
  * the names should be self explanatory, the chapterScene property is for the name of the scene it should jump to when the start button is clicked.
  * 
- * You would also need to add the images LeftArrow.png and RightArrow.png into the img/pictures folder.
+ * You would also need to add the images LeftArrow.png and RightArrow.png into the img/pictures folder or add your own with those names.
  * 
- * To use this plugin, simply add the plugin to the project and when the game is run, open the console and type SceneManager.push(Scene_ChapterSelector).
- * To exit the chapter selecter, you can type SceneManager.pop()
+ * @param name
+ * @desc the name of the Chapter Select option in the title menu.
+ * @default Chapter Select
+ * 
+ * @param add_position
+ * @desc position of the Chapter Select option in title menu.
+ * @default 3
  */
 
 // Load all required json files here
@@ -21,6 +26,31 @@
 // this language would have to read from a config file.
 const language = 'EN';
 DataManager.loadDataFile('chapters', `Chapters_${language}.json`);
+
+// Adds a command for Chapter Select to the title screen
+const parameters      = PluginManager.parameters('ChapterSelector');
+const _Window_TitleCommand_makeCommandList      = Window_TitleCommand.prototype.makeCommandList;
+Window_TitleCommand.prototype.makeCommandList = function() {
+    _Window_TitleCommand_makeCommandList.call(this);
+    this.addCommand(parameters['name'], 'chapterSelect', true);
+    var addPosition = parseInt(parameters['add_position'], 10);
+    if (addPosition > 0) {
+        var anotherCommand = this._list.pop();
+        this._list.splice(addPosition - 1, 0, anotherCommand);
+    }
+};
+
+const _Scene_Title_commandChapterSelect      = Scene_Title.prototype.commandChapterSelect;
+Scene_Title.prototype.commandChapterSelect = function() {
+    if (_Scene_Title_commandChapterSelect) _Scene_Title_commandChapterSelect.apply(this, arguments);
+    SceneManager.goto(Scene_ChapterSelector);
+};
+
+const _Scene_Title_createCommandWindow      = Scene_Title.prototype.createCommandWindow;
+Scene_Title.prototype.createCommandWindow = function() {
+    _Scene_Title_createCommandWindow.call(this);
+    this._commandWindow.setHandler('chapterSelect', this.commandChapterSelect.bind(this));
+};
 
 // Chapter Selector scene
 function Scene_ChapterSelector() {
