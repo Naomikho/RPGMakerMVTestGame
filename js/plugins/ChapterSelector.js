@@ -65,6 +65,19 @@ Scene_ChapterSelector.prototype.initialize = function() {
     this._handler = new ChapterSelector();
 };
 
+Scene_ChapterSelector.prototype.start = function() {
+    Scene_MenuBase.prototype.start.call(this);
+    this._previousBgm = AudioManager.saveBgm(); // Save current BGM
+    AudioManager.playBgm({ name: "Butterfly", volume: 80, pitch: 100, pan: 0 });
+};
+
+Scene_ChapterSelector.prototype.terminate = function() {
+    Scene_MenuBase.prototype.terminate.call(this);
+    if (this._previousBgm) {
+        AudioManager.replayBgm(this._previousBgm); // Restore previous BGM
+    }
+};
+
 Scene_ChapterSelector.prototype.create = function() {
     Scene_Base.prototype.create.call(this);
     this.createBackground();
@@ -74,6 +87,22 @@ Scene_ChapterSelector.prototype.create = function() {
 
     // Listen for chapter changes
     this._handler.on('chapterChanged', this.onChapterChanged.bind(this));
+};
+
+Scene_ChapterSelector.prototype.update = function() {
+    Scene_Base.prototype.update.call(this);
+
+    if (Input.isPressed("left")) {
+        this._handler.decrementChapter();
+    }
+    
+    if (Input.isPressed("right")) {
+        this._handler.incrementChapter();
+    }
+
+    if (Input.isTriggered("cancel")) { // ESC or X button
+        SceneManager.goto(Scene_Title);
+    }
 };
 
 Scene_ChapterSelector.prototype.createBackground = function() {
