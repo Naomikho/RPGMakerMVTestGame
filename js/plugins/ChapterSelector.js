@@ -10,6 +10,9 @@
  * the names should be self explanatory, the chapterScene property is for the name of the scene it should jump to when the start button is clicked.
  * 
  * You would also need to add the images LeftArrow.png and RightArrow.png into the img/pictures folder.
+ * 
+ * To use this plugin, simply add the plugin to the project and when the game is run, open the console and type SceneManager.push(Scene_ChapterSelector).
+ * To exit the chapter selecter, you can type SceneManager.pop()
  */
 
 // Load all required json files here
