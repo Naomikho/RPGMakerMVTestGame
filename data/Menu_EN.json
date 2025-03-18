@@ -1,0 +1,15 @@
+{
+    "Credits" : {
+        "mode" : "text",
+        "items": {
+            "Created By": ["RyuRangerr"],
+            "Developers": ["RyuRangerr", "Kino"],
+            "Artists": ["Matu", "Evil&Autistic", "Jo0o0o", "Cateuvu", "Liex", "Ivan", "Finley", "Lu"],
+            "Script": ["RyuRangerr", "Matu", "Majoyeah", "FGLezvelda", "Kino", "Yui"],
+            "Translated to English by": ["RyuRangerr"],
+            "Footer": "We are not affliated with Nankidai!"
+        } 
+    },
+    "Extras" : {},
+    "Achievements" : {}
+}

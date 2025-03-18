@@ -2,7 +2,7 @@
  * @plugindesc Plugin for Chapter Selector scene.
  * @author Naomikho
  *
- * @help This plugin does not provide plugin commands nor params. Params are to be set in json files or via the code itself.
+ * @help This plugin does not provide plugin commands.
  *
  * setup required:
  * A Chapters_{language_name}.json file. Currently it will read Chapters_EN.json file by default, 
@@ -20,20 +20,22 @@
  * @default 3
  */
 
+const ChapterSelector = {};
+
 // Load all required json files here
 
 // TODO: when we have translations, so we'd have to dynamically load it from a xxx_{language_name}.json
 // this language would have to read from a config file.
-const language = 'EN';
-DataManager.loadDataFile('chapters', `Chapters_${language}.json`);
+ChapterSelector.language = 'EN';
+DataManager.loadDataFile('chapters', `Chapters_${ChapterSelector.language}.json`);
 
 // Adds a command for Chapter Select to the title screen
-const parameters      = PluginManager.parameters('ChapterSelector');
-const _Window_TitleCommand_makeCommandList      = Window_TitleCommand.prototype.makeCommandList;
+const chapterSelectorParams      = PluginManager.parameters('ChapterSelector');
+ChapterSelector._makeCommandList      = Window_TitleCommand.prototype.makeCommandList;
 Window_TitleCommand.prototype.makeCommandList = function() {
-    _Window_TitleCommand_makeCommandList.call(this);
-    this.addCommand(parameters['name'], 'chapterSelect', true);
-    var addPosition = parseInt(parameters['add_position'], 10);
+    ChapterSelector._makeCommandList.call(this);
+    this.addCommand(chapterSelectorParams['name'], 'chapterSelect', true);
+    var addPosition = parseInt(chapterSelectorParams['add_position'], 10);
     if (addPosition > 0) {
         var anotherCommand = this._list.pop();
         this._list.splice(addPosition - 1, 0, anotherCommand);
@@ -46,9 +48,9 @@ Scene_Title.prototype.commandChapterSelect = function() {
     SceneManager.goto(Scene_ChapterSelector);
 };
 
-const _Scene_Title_createCommandWindow      = Scene_Title.prototype.createCommandWindow;
+ChapterSelector._createCommandWindow      = Scene_Title.prototype.createCommandWindow;
 Scene_Title.prototype.createCommandWindow = function() {
-    _Scene_Title_createCommandWindow.call(this);
+    ChapterSelector._createCommandWindow .call(this);
     this._commandWindow.setHandler('chapterSelect', this.commandChapterSelect.bind(this));
 };
 
@@ -62,19 +64,25 @@ Scene_ChapterSelector.prototype.constructor = Scene_ChapterSelector;
 
 Scene_ChapterSelector.prototype.initialize = function() {
     Scene_Base.prototype.initialize.call(this);
-    this._handler = new ChapterSelector();
+    this._handler = new ChapterSelectorHandler();
 };
 
 Scene_ChapterSelector.prototype.start = function() {
     Scene_MenuBase.prototype.start.call(this);
-    this._previousBgm = AudioManager.saveBgm(); // Save current BGM
+    this._previousBgm = AudioManager.saveBgm();
     AudioManager.playBgm({ name: "Butterfly", volume: 80, pitch: 100, pan: 0 });
 };
 
 Scene_ChapterSelector.prototype.terminate = function() {
     Scene_MenuBase.prototype.terminate.call(this);
     if (this._previousBgm) {
-        AudioManager.replayBgm(this._previousBgm); // Restore previous BGM
+        AudioManager.playBgm({
+            name: this._previousBgm.name,
+            volume: this._previousBgm.volume,
+            pitch: this._previousBgm.pitch,
+            pan: this._previousBgm.pan,
+            pos: 0
+        });
     }
 };
 
@@ -156,6 +164,7 @@ Scene_ChapterSelector.prototype.createStartButton = function() {
     // Draw text on the button
     this._startButton.bitmap.textColor = '#FFF'; // White text
     this._startButton.bitmap.fontSize = 28;
+    // TODO: Replace Start with the translation equivalent text...
     this._startButton.bitmap.drawText('Start ' + this._handler.chapterName, -15, 10, 300, 30, 'center');
     this._startButton.x = 260;
     this._startButton.y = 540;
@@ -180,6 +189,7 @@ Scene_ChapterSelector.prototype.createText = function() {
     this._textSprite.x = 195;
     this._textSprite.y = 25;
     this._textSprite.bitmap.fontSize = 38;
+    // TODO: Replace Start with the translation equivalent text...
     this._textSprite.bitmap.drawText('Chapter Select', 0, 0, 400, 40, 'center');
     this.addChild(this._textSprite);
 
@@ -205,6 +215,7 @@ Scene_ChapterSelector.prototype.updateText = function() {
 Scene_ChapterSelector.prototype.updateStartButtonText = function() {
     if (this._startButton) {
         this._startButton.bitmap.clear();
+        // TODO: Replace Start with the translation equivalent text...
         this._startButton.bitmap.drawText('Start ' + this._handler.chapterName, -25, 10, 300, 30, 'center');
     }
 }
@@ -218,7 +229,7 @@ Scene_ChapterSelector.prototype.onChapterChanged = function(chapterIndex) {
 
 
 // Chapter Selection Logic
-class ChapterSelector {
+class ChapterSelectorHandler {
     constructor() {
         this.chapterNumber = 1;
         // read the chapter progress of the player.
