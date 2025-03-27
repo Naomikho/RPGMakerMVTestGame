@@ -1,15 +1,76 @@
 {
     "Credits" : {
-        "mode" : "text",
-        "items": {
-            "Created By": ["RyuRangerr"],
-            "Developers": ["RyuRangerr", "Kino"],
-            "Artists": ["Matu", "Evil&Autistic", "Jo0o0o", "Cateuvu", "Liex", "Ivan", "Finley", "Lu"],
-            "Script": ["RyuRangerr", "Matu", "Majoyeah", "FGLezvelda", "Kino", "Yui"],
-            "Translated to English by": ["RyuRangerr"],
-            "Footer": "We are not affliated with Nankidai!"
-        } 
+        "mode" : "vertical",
+        "itemHeight": 150,
+        "itemColumns": 2,
+        "footerText": "We are not affliated with Nankidai!",
+        "highlightSelectedItem": false,
+        "items": [
+            {
+                "title": "Created By",
+                "content": ["RyuRangerr"]
+            },
+            {
+                "title": "Developers",
+                "content": ["RyuRangerr", "Kino"]
+            },
+            {
+                "title": "Artists",
+                "content": ["Matu", "Evil&Autistic", "Jo0o0o", "Cateuvu", "Liex", "Ivan", "Finley", "Lu"]
+            },
+            {
+                "title": "Script",
+                "content": ["RyuRangerr", "Matu", "Majoyeah", "FGLezvelda", "Kino", "Yui"]
+            }, 
+            {
+                "title": "Translated to English by",
+                "content": ["RyuRangerr"]
+            }
+        ] 
     },
-    "Extras" : {},
-    "Achievements" : {}
+    "Extras" : {
+        "mode" : "tabs",
+        "itemHeight": 45,
+        "itemColumns": 3,
+        "highlightSelectedItem": true,
+        "footerText": "",
+        "items" : [
+            {
+                "title": "CG",
+                "content": []
+            },
+            {
+                "title": "Music",
+                "content": []
+            },
+            {
+                "title": "Concepts",
+                "content": []
+            },
+            {
+                "title": "Dev Notes",
+                "content": []
+            }
+        ]
+    },
+    "Achievements" : {
+        "mode" : "vertical",
+        "itemHeight": 64,
+        "highlightSelectedItem": true,
+        "footerText": "",
+        "items" : [
+            {
+                "title": "Cleared Chapter 1 Part 1",
+                "content": "Completed Chapter 1 Part 1",
+                "iconIndex": 201,
+                "disabled": false
+            },
+            {
+                "title": "Cleared Chapter 1 Part 2",
+                "content": "Completed Chapter 1 Part 2",
+                "iconIndex": 201,
+                "disabled": false
+            }
+        ]
+    }
 }
